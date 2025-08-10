@@ -7,6 +7,9 @@
     "start": "node index.js",
     "server": "node servidor.js",
     "visualize": "node servidor.js",
+    "auto-update": "node auto-updater.js",
+    "server-live": "node servidor-mejorado.js --auto-refresh",
+    "visualize-live": "node servidor-mejorado.js --auto-refresh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["smn", "weather", "argentina", "meteorologia", "api"],

@@ -2,6 +2,7 @@ class WeatherVisualization {
     constructor() {
         this.weatherData = null;
         this.currentFilter = '';
+        this.currentSearch = '';
         this.init();
     }
 
@@ -34,15 +35,38 @@ class WeatherVisualization {
 
     setupEventListeners() {
         const provinceFilter = document.getElementById('provinceFilter');
+        const citySearch = document.getElementById('citySearch');
+        const clearSearch = document.getElementById('clearSearch');
+
         provinceFilter.addEventListener('change', (e) => {
             this.currentFilter = e.target.value;
             this.renderData();
+        });
+
+        citySearch.addEventListener('input', (e) => {
+            this.currentSearch = e.target.value.toLowerCase().trim();
+            this.renderData();
+        });
+
+        clearSearch.addEventListener('click', () => {
+            citySearch.value = '';
+            this.currentSearch = '';
+            this.renderData();
+        });
+
+        // Limpiar búsqueda con Escape
+        citySearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                citySearch.value = '';
+                this.currentSearch = '';
+                this.renderData();
+            }
         });
     }
 
     getUniqueProvinces() {
         const provinces = [...new Set(this.weatherData.map(station => station.province || 'Sin especificar'))];
-        return provinces.sort();
+        return provinces.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
     }
 
     populateProvinceFilter() {
@@ -61,12 +85,24 @@ class WeatherVisualization {
     }
 
     filterData() {
-        if (!this.currentFilter) {
-            return this.weatherData;
+        let filteredData = this.weatherData;
+
+        // Filtrar por provincia
+        if (this.currentFilter) {
+            filteredData = filteredData.filter(station => 
+                (station.province || 'Sin especificar') === this.currentFilter
+            );
         }
-        return this.weatherData.filter(station => 
-            (station.province || 'Sin especificar') === this.currentFilter
-        );
+
+        // Filtrar por búsqueda de ciudad
+        if (this.currentSearch) {
+            filteredData = filteredData.filter(station => {
+                const stationName = (station.name || '').toLowerCase();
+                return stationName.includes(this.currentSearch);
+            });
+        }
+
+        return filteredData;
     }
 
     groupByProvince(data) {
@@ -90,11 +126,18 @@ class WeatherVisualization {
         const description = weather.description || 'Sin descripción';
         const tempDesc = weather.temp_desc || 'N/A';
 
+        // Resaltar texto de búsqueda si existe
+        let stationName = station.name || 'Estación sin nombre';
+        if (this.currentSearch && stationName.toLowerCase().includes(this.currentSearch)) {
+            const regex = new RegExp(`(${this.currentSearch})`, 'gi');
+            stationName = stationName.replace(regex, '<mark style="background: #ffeb3b; color: #333; padding: 2px 4px; border-radius: 3px;">$1</mark>');
+        }
+
         return `
             <div class="weather-card">
                 <div class="card-header">
                     <div>
-                        <div class="station-name">${station.name || 'Estación sin nombre'}</div>
+                        <div class="station-name">${stationName}</div>
                     </div>
                     <div class="temperature">${temp}</div>
                 </div>
@@ -131,6 +174,17 @@ class WeatherVisualization {
         document.getElementById('totalStations').textContent = filteredData.length;
         document.getElementById('totalProvinces').textContent = 
             Object.keys(this.groupByProvince(filteredData)).length;
+        
+        // Mostrar contador de resultados de búsqueda
+        const searchResults = document.getElementById('searchResults');
+        const searchCount = document.getElementById('searchCount');
+        
+        if (this.currentSearch) {
+            searchResults.style.display = 'inline';
+            searchCount.textContent = filteredData.length;
+        } else {
+            searchResults.style.display = 'none';
+        }
     }
 
     renderData() {
@@ -151,6 +205,18 @@ class WeatherVisualization {
             loading.style.display = 'none';
             container.style.display = 'none';
             noResults.style.display = 'block';
+            
+            // Mensaje personalizado según el tipo de filtro
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            if (this.currentSearch && this.currentFilter) {
+                noResultsMessage.textContent = `🔍 No se encontraron ciudades que contengan "${this.currentSearch}" en la provincia "${this.currentFilter}"`;
+            } else if (this.currentSearch) {
+                noResultsMessage.textContent = `🔍 No se encontraron ciudades que contengan "${this.currentSearch}"`;
+            } else if (this.currentFilter) {
+                noResultsMessage.textContent = `🗺️ No se encontraron estaciones en la provincia "${this.currentFilter}"`;
+            } else {
+                noResultsMessage.textContent = '🔍 No se encontraron estaciones para el filtro seleccionado';
+            }
             return;
         }
 
@@ -165,7 +231,12 @@ class WeatherVisualization {
         
         container.innerHTML = '';
 
-        Object.keys(groupedData).sort().forEach(province => {
+        // Ordenar provincias alfabéticamente con soporte para caracteres especiales
+        const sortedProvinces = Object.keys(groupedData).sort((a, b) => 
+            a.localeCompare(b, 'es', { sensitivity: 'base' })
+        );
+
+        sortedProvinces.forEach(province => {
             const stations = groupedData[province];
             const provinceSection = document.createElement('div');
             provinceSection.className = 'province-section';

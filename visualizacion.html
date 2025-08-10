@@ -20,9 +20,19 @@
                     <option value="">Todas las Provincias</option>
                 </select>
                 
+                <label for="citySearch">🔍 Buscar Ciudad:</label>
+                <input 
+                    type="text" 
+                    id="citySearch" 
+                    class="search-input" 
+                    placeholder="Escribir nombre de ciudad..."
+                >
+                <button id="clearSearch" class="clear-search">✕ Limpiar</button>
+                
                 <div class="stats">
                     <span>📊 Total de estaciones: <span id="totalStations">0</span></span>
                     <span>🗺️ Provincias: <span id="totalProvinces">0</span></span>
+                    <span id="searchResults" style="display: none;">🔍 Resultados: <span id="searchCount">0</span></span>
                 </div>
             </div>
         </div>
@@ -36,7 +46,7 @@
         </div>
 
         <div id="noResults" class="no-results" style="display: none;">
-            <p>🔍 No se encontraron estaciones para el filtro seleccionado</p>
+            <p id="noResultsMessage">🔍 No se encontraron estaciones para el filtro seleccionado</p>
         </div>
     </div>
 

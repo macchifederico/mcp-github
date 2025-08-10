@@ -12,8 +12,9 @@ Aplicación Node.js 20 que se conecta a la API del Servicio Meteorológico Nacio
 - 💾 **Exportación**: Guarda los datos en formato JSON
 - 🛡️ **Manejo de errores**: Control robusto de errores y timeouts
 - 🎨 **Visualización web**: Interface visual con cards agrupadas por provincia
-- 🔍 **Filtros**: Filtrado dinámico por provincia
+- 🔍 **Filtros avanzados**: Filtrado dinámico por provincia y búsqueda por ciudad
 - 📱 **Responsive**: Diseño adaptable a diferentes dispositivos
+- ⚡ **Búsqueda en tiempo real**: Resaltado de resultados con sugerencias instantáneas
 
 ## 🛠️ Instalación
 
@@ -31,32 +32,39 @@ npm start
 
 ## 🔧 Uso
 
-### Obtener datos meteorológicos
+### 📊 Obtener datos meteorológicos (manual)
 ```bash
-# Ejecutar recolección de datos
+# Ejecutar recolección de datos una vez
 npm start
 ```
 
-### Visualizar datos en el navegador
+### 🌐 Visualizar datos en el navegador
 ```bash
-# Iniciar servidor de visualización
+# Servidor básico (datos estáticos)
 npm run visualize
+
+# Servidor con auto-actualización (datos siempre frescos)
+npm run visualize-live
 
 # Abrir en el navegador: http://localhost:3000
 ```
 
-### Ejecución básica (línea de comandos)
+### 🔄 Actualización automática en background
 ```bash
-node index.js
+# Actualizar datos cada 15 minutos (por defecto)
+npm run auto-update
+
+# Actualizar cada X minutos (personalizado)
+node auto-updater.js 30  # cada 30 minutos
 ```
 
-### Como módulo
-```javascript
-const { SMNWeatherClient } = require('./index.js');
+### ⚙️ Configurar cron job (Windows)
+```powershell
+# Ejecutar como Administrador
+.\setup-cron.ps1
 
-const client = new SMNWeatherClient();
-const weatherData = await client.getWeatherData();
-console.log(weatherData);
+# Con intervalo personalizado
+.\setup-cron.ps1 -IntervalMinutes 10
 ```
 
 ## 🎨 Visualización Web
@@ -66,9 +74,12 @@ La aplicación incluye una interfaz web moderna para visualizar los datos meteor
 ### **Características de la visualización:**
 - 📋 **Cards organizadas** por provincia
 - 🔍 **Filtro dinámico** por provincia
+- 🌆 **Buscador de ciudades** con resaltado de resultados
 - 📊 **Información completa**: temperatura, humedad, viento, descripción
 - 📱 **Design responsive** para móviles y desktop
 - 🎯 **Datos en tiempo real** desde `weather_data.json`
+- ⚡ **Búsqueda instantánea** mientras escribes
+- 🎨 **Resaltado visual** de coincidencias de búsqueda
 
 ### **Datos mostrados en cada card:**
 - 🏷️ **Nombre** de la estación meteorológica
@@ -79,11 +90,63 @@ La aplicación incluye una interfaz web moderna para visualizar los datos meteor
 - 🌡️ **Descripción térmica** (tempDesc)
 - ☁️ **Descripción** del clima
 
-### **Iniciar visualización:**
+## 🔄 Sistema de Actualización Automática
+
+### **Opciones disponibles:**
+
+#### 🔴 **Modo Estático** (por defecto)
+- Los datos se obtienen manualmente con `npm start`
+- La visualización usa datos del archivo local
+- Ideal para desarrollo y demos
+
+#### 🟢 **Modo Auto-Actualización**
+- Datos se actualizan automáticamente cada X minutos
+- Siempre muestra información fresca del SMN
+- Ideal para producción y monitoreo
+
+### **Comandos de actualización:**
+
 ```bash
-npm run visualize
-# Abrir: http://localhost:3000
+# Actualizar en background cada 15 minutos
+npm run auto-update
+
+# Personalizar intervalo (ej: cada 30 minutos)
+node auto-updater.js 30
+
+# Servidor web con auto-refresh
+npm run visualize-live
 ```
+
+### **Configuración de Cron Job (Windows):**
+
+```powershell
+# Ejecutar PowerShell como Administrador
+.\setup-cron.ps1
+
+# Con intervalo personalizado
+.\setup-cron.ps1 -IntervalMinutes 10
+```
+
+### **Ventajas del sistema automático:**
+- ✅ **Datos siempre frescos**: Actualización automática del SMN
+- ✅ **Sin intervención manual**: Funciona en background
+- ✅ **Configurable**: Intervalos personalizables (5-60 minutos)
+- ✅ **Robusto**: Reintentos automáticos en caso de error
+- ✅ **Logging**: Registro de todas las actualizaciones
+
+## 🔍 Funcionalidades de Búsqueda y Filtrado
+
+### **Filtros disponibles:**
+- 🗺️ **Por Provincia**: Selecciona una provincia específica del dropdown
+- 🏙️ **Por Ciudad**: Busca estaciones por nombre de ciudad (búsqueda parcial)
+- 🔄 **Combinados**: Usa ambos filtros simultáneamente para búsquedas más precisas
+
+### **Características del buscador:**
+- ⚡ **Búsqueda en tiempo real**: Los resultados se actualizan mientras escribes
+- 🎨 **Resaltado visual**: Las coincidencias se destacan en amarillo
+- 🧹 **Botón limpiar**: Limpia la búsqueda rápidamente
+- ⌨️ **Atajo de teclado**: Presiona `Escape` para limpiar la búsqueda
+- 📊 **Contador dinámico**: Muestra el número de resultados encontrados
 
 ## 📁 Estructura del proyecto
 
@@ -94,7 +157,10 @@ mcp-github/
 ├── js/
 │   └── app.js              # Lógica JavaScript de la aplicación web
 ├── index.js                # Cliente API SMN (línea de comandos)
-├── servidor.js             # Servidor web para visualización
+├── servidor.js             # Servidor web básico
+├── servidor-mejorado.js    # Servidor web con auto-actualización
+├── auto-updater.js         # Actualizador automático independiente
+├── setup-cron.ps1          # Script PowerShell para configurar tarea programada
 ├── visualizacion.html      # Interface HTML principal
 ├── weather_data.json       # Datos meteorológicos (generado automáticamente)
 ├── package.json            # Configuración Node.js y dependencias
@@ -144,6 +210,13 @@ Esta aplicación resuelve múltiples issues:
 - ✅ JavaScript separado en `js/app.js`
 - ✅ HTML limpio sin código inline
 - ✅ Estructura modular y mantenible
+
+### Issue #4: "Implementar buscador"
+- ✅ Buscador por ciudad implementado
+- ✅ Búsqueda en tiempo real con resaltado
+- ✅ Filtros combinables (provincia + ciudad)
+- ✅ Contador dinámico de resultados
+- ✅ Atajos de teclado y botón de limpiar
 
 ## 📄 Licencia
 
