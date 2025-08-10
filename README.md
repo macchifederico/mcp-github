@@ -11,6 +11,9 @@ Aplicación Node.js 20 que se conecta a la API del Servicio Meteorológico Nacio
 - 📊 **Endpoint**: GET a `map_items/weather`
 - 💾 **Exportación**: Guarda los datos en formato JSON
 - 🛡️ **Manejo de errores**: Control robusto de errores y timeouts
+- 🎨 **Visualización web**: Interface visual con cards agrupadas por provincia
+- 🔍 **Filtros**: Filtrado dinámico por provincia
+- 📱 **Responsive**: Diseño adaptable a diferentes dispositivos
 
 ## 🛠️ Instalación
 
@@ -28,7 +31,21 @@ npm start
 
 ## 🔧 Uso
 
-### Ejecución básica
+### Obtener datos meteorológicos
+```bash
+# Ejecutar recolección de datos
+npm start
+```
+
+### Visualizar datos en el navegador
+```bash
+# Iniciar servidor de visualización
+npm run visualize
+
+# Abrir en el navegador: http://localhost:3000
+```
+
+### Ejecución básica (línea de comandos)
 ```bash
 node index.js
 ```
@@ -42,16 +59,31 @@ const weatherData = await client.getWeatherData();
 console.log(weatherData);
 ```
 
-## 📋 Datos disponibles
+## 🎨 Visualización Web
 
-La aplicación obtiene información de múltiples estaciones meteorológicas incluyendo:
+La aplicación incluye una interfaz web moderna para visualizar los datos meteorológicos:
 
+### **Características de la visualización:**
+- 📋 **Cards organizadas** por provincia
+- 🔍 **Filtro dinámico** por provincia
+- 📊 **Información completa**: temperatura, humedad, viento, descripción
+- 📱 **Design responsive** para móviles y desktop
+- 🎯 **Datos en tiempo real** desde `weather_data.json`
+
+### **Datos mostrados en cada card:**
+- 🏷️ **Nombre** de la estación meteorológica
 - 🌡️ **Temperatura** actual
-- 💨 **Velocidad del viento**
-- 💧 **Humedad relativa**
-- ☁️ **Descripción del clima**
-- 📍 **Ubicación** (provincia, ciudad)
-- 🕐 **Timestamp** de la consulta
+- � **Humedad** relativa
+- �💨 **Velocidad del viento**
+- 🧭 **Dirección del viento** (wind_deg)
+- 🌡️ **Descripción térmica** (tempDesc)
+- ☁️ **Descripción** del clima
+
+### **Iniciar visualización:**
+```bash
+npm run visualize
+# Abrir: http://localhost:3000
+```
 
 ## 🌐 API del SMN
 
