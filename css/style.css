@@ -123,6 +123,16 @@ body {
     transform: translateY(-2px);
 }
 
+.clear-search:active {
+    transform: translateY(0);
+}
+
+.clear-search.success {
+    background: #00b894 !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+}
+
 .stats {
     display: flex;
     gap: 20px;
