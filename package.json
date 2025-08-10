@@ -1,0 +1,19 @@
+{
+  "name": "smn-weather-api",
+  "version": "1.0.0",
+  "description": "Aplicación Node.js para conectar con la API del Servicio Meteorológico Nacional de Argentina",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["smn", "weather", "argentina", "meteorologia", "api"],
+  "author": "macchifederico",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.11.0"
+  }
+}
