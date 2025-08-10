@@ -33,6 +33,30 @@ body {
     opacity: 0.9;
 }
 
+.last-update-info {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: inline-block;
+}
+
+.last-update-info span {
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.update-fresh {
+    color: #00b894 !important;
+}
+
+.update-old {
+    color: #fdcb6e !important;
+}
+
 .controls {
     background: rgba(255,255,255,0.15);
     backdrop-filter: blur(10px);

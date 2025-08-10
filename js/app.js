@@ -26,7 +26,14 @@ class WeatherVisualization {
             }
             const data = await response.json();
             this.weatherData = data.data || [];
+            this.lastUpdate = data.timestamp || null;
+            this.dataSource = data.source || 'https://ws.smn.gob.ar/map_items/weather';
+            
             console.log('Datos cargados:', this.weatherData.length, 'estaciones');
+            console.log('Última actualización:', this.lastUpdate);
+            
+            // Actualizar información de última actualización
+            this.updateLastUpdateInfo();
         } catch (error) {
             console.error('Error cargando datos:', error);
             throw error;
@@ -170,20 +177,63 @@ class WeatherVisualization {
         `;
     }
 
-    updateStats(filteredData) {
-        document.getElementById('totalStations').textContent = filteredData.length;
-        document.getElementById('totalProvinces').textContent = 
-            Object.keys(this.groupByProvince(filteredData)).length;
+    updateLastUpdateInfo() {
+        const lastUpdateElement = document.getElementById('lastUpdateText');
         
-        // Mostrar contador de resultados de búsqueda
-        const searchResults = document.getElementById('searchResults');
-        const searchCount = document.getElementById('searchCount');
+        if (!this.lastUpdate) {
+            lastUpdateElement.innerHTML = '⚠️ Información de actualización no disponible';
+            return;
+        }
         
-        if (this.currentSearch) {
-            searchResults.style.display = 'inline';
-            searchCount.textContent = filteredData.length;
-        } else {
-            searchResults.style.display = 'none';
+        try {
+            const updateDate = new Date(this.lastUpdate);
+            const now = new Date();
+            const timeDiff = now - updateDate;
+            const minutesDiff = Math.floor(timeDiff / (1000 * 60));
+            const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
+            
+            // Formatear fecha y hora
+            const dateStr = updateDate.toLocaleDateString('es-AR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const timeStr = updateDate.toLocaleTimeString('es-AR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            // Determinar qué tan reciente es la actualización
+            let timeAgo = '';
+            let statusClass = '';
+            
+            if (minutesDiff < 1) {
+                timeAgo = 'Hace menos de 1 minuto';
+                statusClass = 'update-fresh';
+            } else if (minutesDiff < 60) {
+                timeAgo = `Hace ${minutesDiff} minuto${minutesDiff !== 1 ? 's' : ''}`;
+                statusClass = minutesDiff <= 30 ? 'update-fresh' : 'update-old';
+            } else if (hoursDiff < 24) {
+                timeAgo = `Hace ${hoursDiff} hora${hoursDiff !== 1 ? 's' : ''}`;
+                statusClass = 'update-old';
+            } else {
+                const daysDiff = Math.floor(hoursDiff / 24);
+                timeAgo = `Hace ${daysDiff} día${daysDiff !== 1 ? 's' : ''}`;
+                statusClass = 'update-old';
+            }
+            
+            lastUpdateElement.innerHTML = `
+                📅 <strong>${dateStr}</strong> • 
+                🕒 <strong>${timeStr}</strong> • 
+                <span class="${statusClass}">⏱️ ${timeAgo}</span>
+            `;
+            
+        } catch (error) {
+            console.error('Error formateando fecha de actualización:', error);
+            lastUpdateElement.innerHTML = `📅 ${this.lastUpdate} • ⚠️ Error formateando fecha`;
         }
     }
 
@@ -253,6 +303,21 @@ class WeatherVisualization {
             
             container.appendChild(provinceSection);
         });
+
+        // Actualizar estadísticas después de renderizar
+        this.updateStats();
+    }
+
+    updateStats() {
+        const totalStations = this.weatherData ? this.weatherData.length : 0;
+        const filteredData = this.filterData();
+        const filteredStations = filteredData.length;
+        const groupedData = this.groupByProvince(filteredData);
+        const provincesShown = Object.keys(groupedData).length;
+        
+        document.getElementById('totalStations').textContent = totalStations;
+        document.getElementById('filteredStations').textContent = filteredStations;
+        document.getElementById('provincesShown').textContent = provincesShown;
     }
 }
 

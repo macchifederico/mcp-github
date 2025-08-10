@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .test-element { 
+            background: red !important; 
+            color: white !important; 
+            padding: 20px !important; 
+            margin: 20px 0 !important; 
+            font-size: 20px !important; 
+            border: 5px solid yellow !important; 
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌤️ Test de Visualización</h1>
+        <p>Servicio Meteorológico Nacional - Argentina</p>
+        
+        <div id="lastUpdateInfo" class="test-element">
+            <span id="lastUpdateText">🔴 ESTE ELEMENTO DEBERÍA SER MUY VISIBLE</span>
+        </div>
+        
+        <p>Si puedes ver la caja roja arriba, entonces el elemento funciona correctamente.</p>
+    </div>
+</body>
+</html>
